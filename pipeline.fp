@@ -46,4 +46,10 @@ pipeline "output_astronauts" {
   output "people_by_name" {
     value = step.transform.astronaut_names.value
   }
+
+  step "message" "notify_astronaut_names" {
+    notifier = notifier.default
+    text     = "${step.transform.astronaut_names.value}"
+  }
+
 }
