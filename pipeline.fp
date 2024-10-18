@@ -40,16 +40,19 @@ pipeline "output_astronauts" {
   }
 
   step "transform" "astronaut_names" {
-    value = {for row in step.pipeline.get_astronauts.output.people_in_space : row.name => row}
+    value = [for row in step.pipeline.get_astronauts.output.people_in_space : row.name]
   }
 
   output "people_by_name" {
-    value = step.transform.astronaut_names.value
+    value = join(", ", step.transform.astronaut_names.value)
   }
 
+ 
   step "message" "notify_astronaut_names" {
     notifier = notifier.default
-    text     = "${step.transform.astronaut_names.value}"
+    text     = join(", ", step.transform.astronaut_names.value)
+    
   }
+
 
 }
