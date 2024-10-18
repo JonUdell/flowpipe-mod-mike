@@ -33,7 +33,7 @@ pipeline "get_astronauts" {
 
 pipeline "output_astronauts" {
   title       = "Output Astronauts"
-  description = "This pipeline gets the astronauts in space and outputs them by name."
+  description = "This pipeline gets the astronauts in space and outputs/notifies them by name."
 
   step "pipeline" "get_astronauts" {
     pipeline = pipeline.get_astronauts
