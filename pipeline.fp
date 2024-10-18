@@ -18,8 +18,6 @@ pipeline "hello" {
 }
 
 pipeline "get_astronauts" {
-  title       = "Get Astronauts"
-  description = "This pipeline gets the astronauts in space."
 
   step "http" "whos_in_space" {
     url    = "http://api.open-notify.org/astros"
@@ -29,11 +27,10 @@ pipeline "get_astronauts" {
   output "people_in_space" {
     value = step.http.whos_in_space.response_body.people
   }
+
 }
 
 pipeline "output_astronauts" {
-  title       = "Output Astronauts"
-  description = "This pipeline gets the astronauts in space and outputs/notifies them by name."
 
   step "pipeline" "get_astronauts" {
     pipeline = pipeline.get_astronauts
@@ -47,12 +44,26 @@ pipeline "output_astronauts" {
     value = join(", ", step.transform.astronaut_names.value)
   }
 
- 
   step "message" "notify_astronaut_names" {
     notifier = notifier.default
     text     = join(", ", step.transform.astronaut_names.value)
-    
   }
 
+}
+
+pipeline "broken_output_astronauts" {
+
+  step "pipeline" "broken_get_astronauts" {
+    pipeline = pipeline.get_astronauts
+  }
+
+  step "transform" "broken_astronaut_names" {
+    value = { for row in step.pipeline.broken_get_astronauts.output.people_in_space : row.name => row }
+  }
+
+  step "message" "broken_notify_astronaut_names" {
+    notifier = notifier.default
+    text     = join(", ", step.transform.broken_astronaut_names.value)
+  }
 
 }
